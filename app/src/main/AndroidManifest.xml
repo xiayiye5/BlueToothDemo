@@ -5,10 +5,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-    <!--模糊定位权限，仅作用于6.0+-->
+    <!-- 模糊定位权限，仅作用于6.0+ -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!--精准定位权限，仅作用于6.0+-->
+    <!-- 精准定位权限，仅作用于6.0+ -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,6 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BlueToothDemo">
+        <activity android:name=".HomeActivityJava" />
+        <activity android:name=".HomeActivityKotlin" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

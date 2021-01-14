@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -14,11 +14,10 @@
         android:gravity="center"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        tools:text="蓝牙名字"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:text="蓝牙名字" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tv_scanner"
         android:layout_width="match_parent"
         android:layout_height="44dp"
@@ -28,5 +27,6 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:text="扫描到的设备"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:visibility="gone" />
 </LinearLayout>
