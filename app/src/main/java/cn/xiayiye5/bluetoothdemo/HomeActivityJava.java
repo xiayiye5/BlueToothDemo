@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,18 +12,23 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,14 +36,14 @@ import java.util.Set;
 /**
  * @author xiayiye5
  */
-public class HomeActivityJava extends AppCompatActivity {
+public class HomeActivityJava extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, ConnectBlueCallBack {
     private ListView lvBlueList;
     private ListView lvScanner;
     private TextView tvStartScanner;
     private BluetoothAdapter defaultAdapter;
     private MyBlueListAdapter myBlueListAdapter;
-    private List<String> list = new ArrayList<>();
-    private List<String> blueList = new ArrayList<>();
+    private final List<String> list = new ArrayList<>();
+    private final List<BluetoothDevice> blueList = new ArrayList<>();
 
 
     @Override
@@ -67,6 +73,9 @@ public class HomeActivityJava extends AppCompatActivity {
         myBlueListAdapter = new MyBlueListAdapter(this, blueList);
         lvScanner.setAdapter(myBlueListAdapter);
         defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+        //点击列表开始配对
+        lvScanner.setOnItemClickListener(this);
+        lvScanner.setOnItemLongClickListener(this);
         if (!defaultAdapter.isEnabled()) {
             //蓝牙设备未开启，自动开启蓝牙,此方法打开蓝牙后无回调
 //            defaultAdapter.enable()
@@ -127,14 +136,14 @@ public class HomeActivityJava extends AppCompatActivity {
                 Log.d("打印扫描", "结束扫描...");
                 tvStartScanner.setText("搜索完成...");
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                if (TextUtils.isEmpty(device.getName())) {
+                if (TextUtils.isEmpty(device.getAddress())) {
                     return;
                 }
-                Log.d("打印扫描", "发现设备..." + device.getName());
-                blueList.add(device.getName() + "(" + device.getAddress() + ")");
+                Log.d("打印扫描", device.getAddress() + "发现设备..." + device.getName());
+                blueList.add(device);
                 myBlueListAdapter.notifyDataSetChanged();
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                Log.d("打印扫描", "设备绑定状态改变...");
+                Log.d("打印扫描", device.getName() + "设备绑定状态改变...");
             }
         }
     };
@@ -192,5 +201,69 @@ public class HomeActivityJava extends AppCompatActivity {
         //解除注册
         unregisterReceiver(mFindBlueToothReceiver);
         Log.e("destory", "解除注册");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //配对之前取消蓝牙扫描
+        if (defaultAdapter.isDiscovering()) {
+            defaultAdapter.cancelDiscovery();
+        }
+        BluetoothDevice blueDevice = blueList.get(position);
+        if (blueDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
+            //已配对
+            Toast.makeText(this, "此设备已配对,无需再次配对！", Toast.LENGTH_LONG).show();
+            //开始连接蓝牙设备
+            connect(blueDevice, this);
+        } else {
+            //开始配对
+            try {
+                Method createBond = BluetoothDevice.class.getMethod("createBond");
+                boolean isBond = (boolean) createBond.invoke(blueDevice);
+                if (isBond) {
+                    Toast.makeText(this, "配对成功！", Toast.LENGTH_LONG).show();
+                    //开始连接蓝牙设备
+                    connect(blueDevice, this);
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 连接 （在配对之后调用）
+     *
+     * @param device 设备
+     */
+    public void connect(BluetoothDevice device, ConnectBlueCallBack callBack) {
+        //连接之前把扫描关闭
+        if (defaultAdapter.isDiscovering()) {
+            defaultAdapter.cancelDiscovery();
+        }
+        new ConnectBlueTask(callBack).execute(device);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        //长按取消配对,跳转到系统蓝牙页面自行取消
+        startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+        return false;
+    }
+
+    @Override
+    public void onStartConnect() {
+        Toast.makeText(this, "开始连接", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onConnectSuccess(BluetoothDevice bluetoothDevice, BluetoothSocket bluetoothSocket) {
+        Toast.makeText(this, "连接成功", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onConnectFail(BluetoothDevice bluetoothDevice, String fail) {
+        Toast.makeText(this, "连接失败", Toast.LENGTH_LONG).show();
     }
 }

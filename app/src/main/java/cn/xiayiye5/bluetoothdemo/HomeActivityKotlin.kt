@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,26 +12,30 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import java.lang.reflect.InvocationTargetException
 import kotlin.concurrent.thread
 
 
-class HomeActivityKotlin : AppCompatActivity() {
+class HomeActivityKotlin : AppCompatActivity(), AdapterView.OnItemClickListener,
+    AdapterView.OnItemLongClickListener, ConnectBlueCallBack {
     private lateinit var lvBlueList: ListView
     private lateinit var lvScanner: ListView
     private lateinit var tvStartScanner: TextView
     private lateinit var defaultAdapter: BluetoothAdapter
     private lateinit var myBlueListAdapter: MyBlueListAdapter
     private var list: MutableList<String?> = ArrayList()
-    private var blueList: MutableList<String?> = ArrayList()
+    private var blueList: MutableList<BluetoothDevice?> = ArrayList()
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +64,9 @@ class HomeActivityKotlin : AppCompatActivity() {
         myBlueListAdapter = MyBlueListAdapter(this, blueList)
         lvScanner.adapter = myBlueListAdapter
         defaultAdapter = BluetoothAdapter.getDefaultAdapter()
+        //点击列表开始配对
+        lvScanner.onItemClickListener = this
+        lvScanner.onItemLongClickListener = this
         if (!defaultAdapter.isEnabled) {
             //蓝牙设备未开启，自动开启蓝牙,此方法打开蓝牙后无回调
 //            defaultAdapter.enable()
@@ -117,11 +125,11 @@ class HomeActivityKotlin : AppCompatActivity() {
                     tvStartScanner.text = "搜索完成..."
                 }
                 BluetoothDevice.ACTION_FOUND -> {
-                    if (TextUtils.isEmpty(device?.name)) {
+                    if (TextUtils.isEmpty(device?.address)) {
                         return
                     }
-                    Log.d("打印扫描", "发现设备..." + device?.name)
-                    blueList.add("${device?.name}(${device?.address})")
+                    Log.d("打印扫描", device?.address + "发现设备..." + device?.name)
+                    blueList.add(device)
                     myBlueListAdapter.notifyDataSetChanged()
                 }
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
@@ -191,5 +199,82 @@ class HomeActivityKotlin : AppCompatActivity() {
         //解除注册
         unregisterReceiver(mFindBlueToothReceiver)
         Log.e("destory", "解除注册")
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    override fun onItemClick(
+        parent: AdapterView<*>?,
+        view: View?,
+        position: Int,
+        id: Long
+    ) {
+        //配对之前取消蓝牙扫描
+        if (defaultAdapter.isDiscovering) {
+            defaultAdapter.cancelDiscovery()
+        }
+        val blueDevice = blueList[position]!!
+        if (blueDevice.bondState == BluetoothDevice.BOND_BONDED) {
+            //已配对
+            Toast.makeText(this, "此设备已配对,无需再次配对！", Toast.LENGTH_LONG).show()
+            //开始连接蓝牙设备
+            connect(blueDevice, this)
+        } else {
+            //开始配对
+            try {
+                val createBond =
+                    BluetoothDevice::class.java.getMethod("createBond")
+                val isBond = createBond.invoke(blueDevice) as Boolean
+                if (isBond) {
+                    Toast.makeText(this, "配对成功！", Toast.LENGTH_LONG).show()
+                    //开始连接蓝牙设备
+                    connect(blueDevice, this)
+                }
+            } catch (e: NoSuchMethodException) {
+                e.printStackTrace()
+            } catch (e: IllegalAccessException) {
+                e.printStackTrace()
+            } catch (e: InvocationTargetException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * 连接 （在配对之后调用）
+     *
+     * @param device 设备
+     */
+    fun connect(device: BluetoothDevice?, callBack: ConnectBlueCallBack?) {
+        //连接之前把扫描关闭
+        if (defaultAdapter.isDiscovering) {
+            defaultAdapter.cancelDiscovery()
+        }
+        ConnectBlueTask(callBack).execute(device)
+    }
+
+    override fun onItemLongClick(
+        parent: AdapterView<*>?,
+        view: View?,
+        position: Int,
+        id: Long
+    ): Boolean {
+        //长按取消配对,跳转到系统蓝牙页面自行取消
+        startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+        return false
+    }
+
+    override fun onStartConnect() {
+        Toast.makeText(this, "开始连接", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onConnectSuccess(
+        bluetoothDevice: BluetoothDevice?,
+        bluetoothSocket: BluetoothSocket?
+    ) {
+        Toast.makeText(this, "连接成功", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onConnectFail(bluetoothDevice: BluetoothDevice?, fail: String?) {
+        Toast.makeText(this, "连接失败", Toast.LENGTH_LONG).show()
     }
 }
