@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import cn.xiayiye5.bluetoothdemo.R
+import cn.xiayiye5.bluetoothdemo.utils.TimerDownUtils
 
 /**
  * @author : xiayiye5
@@ -15,6 +16,8 @@ public class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //当前页面定时任务
+        TimerDownUtils.getInstance().isFinish(this)
     }
 
 
