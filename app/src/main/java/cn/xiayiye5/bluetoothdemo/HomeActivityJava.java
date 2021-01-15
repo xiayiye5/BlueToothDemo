@@ -139,8 +139,8 @@ public class HomeActivityJava extends AppCompatActivity implements AdapterView.O
                 if (TextUtils.isEmpty(device.getAddress())) {
                     return;
                 }
-                Log.d("打印扫描", device.getAddress() + "发现设备..." + device.getName());
                 blueList.add(device);
+                Log.d("打印扫描", "发现第" + blueList.size() + "个蓝牙设备->" + device.getName() + "-" + device.getAddress());
                 myBlueListAdapter.notifyDataSetChanged();
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 Log.d("打印扫描", device.getName() + "设备绑定状态改变...");

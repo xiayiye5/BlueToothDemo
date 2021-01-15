@@ -128,8 +128,8 @@ class HomeActivityKotlin : AppCompatActivity(), AdapterView.OnItemClickListener,
                     if (TextUtils.isEmpty(device?.address)) {
                         return
                     }
-                    Log.d("打印扫描", device?.address + "发现设备..." + device?.name)
                     blueList.add(device)
+                    Log.d("打印扫描", "发现第${blueList.size}个蓝牙设备->${device!!.name}-${device.address}")
                     myBlueListAdapter.notifyDataSetChanged()
                 }
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
