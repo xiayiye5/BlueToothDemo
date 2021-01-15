@@ -7,22 +7,35 @@
     tools:context=".activity.HomeActivityJava">
 
     <Button
-        android:onClick="goJavaPage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="JAVA"
+        android:layout_marginTop="24dp"
+        android:onClick="goJavaPage"
+        android:text="JAVA分开布局效果"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:onClick="goKotlinPage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="92dp"
-        android:text="KOTLIN"
+        android:layout_marginTop="180dp"
+        android:onClick="goJavaPages"
+        android:text="JAVA联动效果"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="312dp"
+        android:onClick="goKotlinPage"
+        android:text="KOTLIN分开布局效果"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

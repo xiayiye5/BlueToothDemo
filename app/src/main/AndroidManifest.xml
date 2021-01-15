@@ -18,6 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BlueToothDemo">
+        <activity android:name=".activity.HomeActivityConnectJava" />
         <activity android:name=".activity.HomeActivityJava" />
         <activity android:name=".activity.HomeActivityKotlin" />
         <activity android:name=".activity.MainActivity">

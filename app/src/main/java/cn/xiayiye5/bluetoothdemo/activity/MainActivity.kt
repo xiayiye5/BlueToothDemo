@@ -18,6 +18,10 @@ public class MainActivity : AppCompatActivity() {
     }
 
 
+    fun goJavaPages(view: View?) {
+        startActivity(Intent(this, HomeActivityConnectJava::class.java))
+    }
+
     fun goJavaPage(view: View?) {
         startActivity(Intent(this, HomeActivityJava::class.java))
     }
