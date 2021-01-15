@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+    <!--注意：如果您的应用适配 Android 9（API 级别 28）或更低版本，则您可以声明 ACCESS_COARSE_LOCATION 权限而非 ACCESS_FINE_LOCATION 权限。-->
     <!-- 模糊定位权限，仅作用于6.0+ -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 精准定位权限，仅作用于6.0+ -->
