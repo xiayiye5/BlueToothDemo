@@ -1,9 +1,13 @@
 package cn.xiayiye5.bluetoothdemo;
 
-/**
+/*
  * @author : xiayiye5
  * @date : 2021/1/14 18:13
  * 类描述 :
+ * 在经典蓝牙连接时，经常出现“run: read failed, socket might closed or timeout, read ret: -1”
+ * 主要原因是UUID的错误。
+ * 非手机终端的UUID：00001101-0000-1000-8000-00805f9B34FB
+ * 手机终端的UUID：00001105-0000-1000-8000-00805f9b34fb
  */
 
 import android.bluetooth.BluetoothDevice;
@@ -11,7 +15,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.io.IOException;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -33,17 +37,30 @@ public class ConnectBlueTask extends AsyncTask<BluetoothDevice, Integer, Bluetoo
         try {
             String address = bluetoothDevice.getAddress();
             Log.d("蓝牙连接", "开始连接socket," + address);
-            socket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            //android 4.2以后方法
+//            socket = (BluetoothSocket) bluetoothDevice.getClass().getDeclaredMethod("createRfcommSocket", new Class[]{int.class}).invoke(bluetoothDevice, 1);
+            //Android 4.2以前方法
+            socket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001105-0000-1000-8000-00805f9b34fb"));
             if (socket != null && !socket.isConnected()) {
+                //开始连接
                 socket.connect();
-                InputStream inputStream = socket.getInputStream();
+                try {
+                    DataOutputStream mOut = new DataOutputStream(socket.getOutputStream());
+                    //消息标记
+                    mOut.writeInt(10098);
+                    mOut.writeUTF("测试手机蓝牙");
+                    mOut.flush();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    socket.close();
+                }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Log.e("蓝牙连接", "socket连接失败");
             try {
                 socket.close();
-            } catch (IOException e1) {
+            } catch (Exception e1) {
                 e1.printStackTrace();
                 Log.e("蓝牙连接", "socket关闭失败");
             }
