@@ -3,7 +3,7 @@ package cn.xiayiye5.bluetoothdemo;
 /*
  * @author : xiayiye5
  * @date : 2021/1/14 18:13
- * 类描述 :
+ * 类描述 : 蓝牙连接失败参考帖子：https://www.cnblogs.com/zoro-zero/p/13390268.html
  * 在经典蓝牙连接时，经常出现“run: read failed, socket might closed or timeout, read ret: -1”
  * 主要原因是UUID的错误。
  * 非手机终端的UUID：00001101-0000-1000-8000-00805f9B34FB
@@ -16,7 +16,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.util.UUID;
 
 /**
