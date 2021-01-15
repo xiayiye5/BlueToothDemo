@@ -18,9 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BlueToothDemo">
-        <activity android:name=".HomeActivityJava" />
-        <activity android:name=".HomeActivityKotlin" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.HomeActivityJava" />
+        <activity android:name=".activity.HomeActivityKotlin" />
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package cn.xiayiye5.bluetoothdemo
+package cn.xiayiye5.bluetoothdemo.activity
 
 import android.Manifest
 import android.app.Activity
@@ -23,12 +23,16 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import cn.xiayiye5.bluetoothdemo.*
+import cn.xiayiye5.bluetoothdemo.adapter.MyAdapter
+import cn.xiayiye5.bluetoothdemo.adapter.MyBlueListAdapter
 import java.lang.reflect.InvocationTargetException
 import kotlin.concurrent.thread
 
 
 class HomeActivityKotlin : AppCompatActivity(), AdapterView.OnItemClickListener,
-    AdapterView.OnItemLongClickListener, ConnectBlueCallBack {
+    AdapterView.OnItemLongClickListener,
+    ConnectBlueCallBack {
     private lateinit var lvBlueList: ListView
     private lateinit var lvScanner: ListView
     private lateinit var tvStartScanner: TextView
@@ -61,7 +65,8 @@ class HomeActivityKotlin : AppCompatActivity(), AdapterView.OnItemClickListener,
         registerReceiver(mFindBlueToothReceiver, filter4)
         registerReceiver(mFindBlueToothReceiver, filter5)
         //初始化搜索蓝牙列表
-        myBlueListAdapter = MyBlueListAdapter(this, blueList)
+        myBlueListAdapter =
+            MyBlueListAdapter(this, blueList)
         lvScanner.adapter = myBlueListAdapter
         defaultAdapter = BluetoothAdapter.getDefaultAdapter()
         //点击列表开始配对
@@ -86,7 +91,8 @@ class HomeActivityKotlin : AppCompatActivity(), AdapterView.OnItemClickListener,
             Log.e("打印蓝牙", "${bondedDevice.name}-${bondedDevice.address}")
             list.add("${bondedDevice.name}-${bondedDevice.address}")
         }
-        lvBlueList.adapter = MyAdapter(this, list)
+        lvBlueList.adapter =
+            MyAdapter(this, list)
     }
 
     fun getBlueToothList(view: View) {

@@ -1,9 +1,10 @@
-package cn.xiayiye5.bluetoothdemo
+package cn.xiayiye5.bluetoothdemo.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import cn.xiayiye5.bluetoothdemo.R
 
 /**
  * @author : xiayiye5

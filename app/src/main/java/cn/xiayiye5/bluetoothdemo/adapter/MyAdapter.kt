@@ -1,4 +1,4 @@
-package cn.xiayiye5.bluetoothdemo
+package cn.xiayiye5.bluetoothdemo.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity

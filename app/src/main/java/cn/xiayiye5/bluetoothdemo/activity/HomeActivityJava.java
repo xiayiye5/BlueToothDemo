@@ -1,4 +1,4 @@
-package cn.xiayiye5.bluetoothdemo;
+package cn.xiayiye5.bluetoothdemo.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -32,6 +32,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import cn.xiayiye5.bluetoothdemo.ConnectBlueCallBack;
+import cn.xiayiye5.bluetoothdemo.ConnectBlueTask;
+import cn.xiayiye5.bluetoothdemo.adapter.MyAdapter;
+import cn.xiayiye5.bluetoothdemo.adapter.MyBlueListAdapter;
+import cn.xiayiye5.bluetoothdemo.R;
 
 /**
  * @author xiayiye5
