@@ -1,6 +1,8 @@
 package cn.xiayiye5.bluetoothdemo.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -22,6 +24,7 @@ import java.util.Locale;
 public class TimerDownUtils {
     private WeakReference<Activity> activityWeakReference;
     private static final TimerDownUtils TIME_UNIT = new TimerDownUtils();
+    private Application currentApplication;
 
     private TimerDownUtils() {
     }
@@ -52,5 +55,23 @@ public class TimerDownUtils {
         activityWeakReference = new WeakReference<>(mainActivity);
         //每隔500毫秒刷新一次数据
         handler.sendEmptyMessageDelayed(0, 500);
+    }
+
+    /**
+     * 获取全局的application
+     *
+     * @return 返回application
+     */
+    @SuppressLint("PrivateApi")
+    public Application getNewApplication() {
+        try {
+            if (currentApplication == null) {
+                currentApplication = (Application) Class.forName("android.app.ActivityThread").getMethod("currentApplication").invoke(null, (Object[]) null);
+            }
+            return currentApplication;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
